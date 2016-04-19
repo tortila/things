@@ -1,110 +1,47 @@
-angular.module('things', ['ngRoute', 'firebase'])
+angular.module('things', ['ngRoute', 'ngResource'])
 
-    .value('fbURL', 'https://ng-projects-list.firebaseio.com/')
-    .service('fbRef', function(fbURL) {
-      return new Firebase(fbURL)
-    })
-    .service('fbAuth', function($q, $firebase, $firebaseAuth, fbRef) {
-      var auth;
-      return function () {
-        if (auth) return $q.when(auth);
-        var authObj = $firebaseAuth(fbRef);
-        if (authObj.$getAuth()) {
-          return $q.when(auth = authObj.$getAuth());
-        }
-        var deferred = $q.defer();
-        authObj.$authAnonymously().then(function(authData) {
-          auth = authData;
-          deferred.resolve(authData);
-        });
-        return deferred.promise;
-      }
-    })
-
-    .service('Projects', function($q, $firebase, fbRef, fbAuth, projectListValue) {
-      var self = this;
-      this.fetch = function () {
-        if (this.projects) return $q.when(this.projects);
-        return fbAuth().then(function(auth) {
-          var deferred = $q.defer();
-          var ref = fbRef.child('projects-fresh/' + auth.auth.uid);
-          var $projects = $firebase(ref);
-          ref.on('value', function(snapshot) {
-            if (snapshot.val() === null) {
-              $projects.$set(projectListValue);
-            }
-            self.projects = $projects.$asArray();
-            deferred.resolve(self.projects);
-          });
-
-          //Remove projects list when no longer needed.
-          ref.onDisconnect().remove();
-          return deferred.promise;
-        });
-      };
-    })
+    .factory('ThingsFactory', ['$http', function ($http) {
+        return $http.get('content.json')
+    }])
 
     .config(function($routeProvider) {
-      var resolveProjects = {
-        projects: function (Projects) {
-          return Projects.fetch();
-        }
+      var resolveThings = {
+          things: function (ThingsFactory) {
+              return ThingsFactory;
+          }
       };
 
       $routeProvider
           .when('/', {
-            controller:'ProjectListController as projectList',
+            controller:'ThingsListController as thingsList',
             templateUrl:'list.html',
-            resolve: resolveProjects
+            resolve: resolveThings
           })
-          .when('/edit/:projectId', {
-            controller:'EditProjectController as editProject',
+          .when('/detail/:thingId', {
+            controller:'DetailThingController as detailThing',
             templateUrl:'detail.html',
-            resolve: resolveProjects
-          })
-          .when('/new', {
-            controller:'NewProjectController as editProject',
-            templateUrl:'detail.html',
-            resolve: resolveProjects
+            resolve: resolveThings
           })
           .otherwise({
             redirectTo:'/'
           });
     })
 
-    .controller('ProjectListController', function(projects) {
-      var projectList = this;
-      projectList.projects = projects;
+    .controller('ThingsListController', function(ThingsFactory) {
+        var thingsList = this;
+        ThingsFactory.success(function(data) {
+            thingsList.things = data;
+        })
     })
 
-    .controller('NewProjectController', function($location, projects) {
-      var editProject = this;
-      editProject.save = function() {
-        projects.$add(editProject.project).then(function(data) {
-          $location.path('/');
-        });
-      };
-    })
+    .controller('DetailThingController',
+    function($location, $routeParams, things) {
+      var detailThing = this;
+      var thingId = $routeParams.thingId,
+          thingIndex;
 
-    .controller('EditProjectController',
-    function($location, $routeParams, projects) {
-      var editProject = this;
-      var projectId = $routeParams.projectId,
-          projectIndex;
+      detailThing.things = things;
+      thingIndex = detailThing.things.$indexFor(thingId);
+      detailThing.thing = detailThing.things[thingIndex];
 
-      editProject.projects = projects;
-      projectIndex = editProject.projects.$indexFor(projectId);
-      editProject.project = editProject.projects[projectIndex];
-
-      editProject.destroy = function() {
-        editProject.projects.$remove(editProject.project).then(function(data) {
-          $location.path('/');
-        });
-      };
-
-      editProject.save = function() {
-        editProject.projects.$save(editProject.project).then(function(data) {
-          $location.path('/');
-        });
-      };
     });
