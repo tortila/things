@@ -1,7 +1,7 @@
 angular.module('things', ['ngRoute', 'ngResource'])
 
     .factory('ThingsFactory', ['$http', function ($http) {
-        return $http.get('content.json')
+        return $http.get('content.json');
     }])
 
     .config(function($routeProvider) {
@@ -19,16 +19,26 @@ angular.module('things', ['ngRoute', 'ngResource'])
           });
     })
 
-    .controller('ThingsListController', ['$http', '$scope',
-        function($http, $scope) {
-            $http.get('content.json').success(function(data) {
+    .controller('ThingsListController', ['$scope', 'ThingsFactory',
+        function($scope, ThingsFactory) {
+            ThingsFactory.success(function(data) {
                 $scope.thingsList = data;
-            });
+            })
         }
     ])
 
-    .controller('DetailThingController', ['$scope', '$routeParams',
-        function($scope, $routeParams) {
+    .controller('DetailThingController', ['$scope', '$routeParams', '$filter', 'ThingsFactory',
+        function($scope, $routeParams, $filter, ThingsFactory) {
+
             $scope.thingId = $routeParams.thingId;
+
+            ThingsFactory.success(function(data) {
+                $scope.thing = $filter('filter')(data, {id: $scope.thingId})[0];
+                $scope.galleryLink = $scope.thing.links[0];
+            });
+
+            $scope.setGalleryImg = function(link) {
+                $scope.galleryLink = link;
+            }
         }
     ]);

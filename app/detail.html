@@ -1,19 +1,23 @@
 <table>
     <thead>
     <tr>
-        <th>Thing ID: {{thingId}}, name: {{thingsList[thingId]}}</th>
+        <th>Thing ID: {{thing.id}}, name: {{thing.name}}</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td ng-repeat="link in thing.links">
-            <a ng-click="">
-                <img ng-src="{{link}}">
-            </a>
+        <td >
+            <div ng-repeat="link in thing.links" class="thumbnail">
+                <a ng-click="setGalleryImg(link)">
+                    <img ng-src="{{link}}">
+                </a>
+            </div>
         </td>
     </tr>
     <tr >
-
+        <td class="gallery-view">
+            <img ng-src="{{galleryLink}}">
+        </td>
     </tr>
     </tbody>
 </table>

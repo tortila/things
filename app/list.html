@@ -11,7 +11,7 @@
         <tr ng-repeat="thing in thingsList | filter:query">
             <td>{{thing.name}}</td>
             <td class="thumbnail">
-                <a href="">
+                <a ng-href="./detail/{{thing.id}}">
                     <img ng-src="{{thing.links[0]}}">
                 </a>
             </td>
