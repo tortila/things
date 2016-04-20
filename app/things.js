@@ -5,43 +5,30 @@ angular.module('things', ['ngRoute', 'ngResource'])
     }])
 
     .config(function($routeProvider) {
-      var resolveThings = {
-          things: function (ThingsFactory) {
-              return ThingsFactory;
-          }
-      };
-
       $routeProvider
           .when('/', {
-            controller:'ThingsListController as thingsList',
-            templateUrl:'list.html',
-            resolve: resolveThings
+            controller:'ThingsListController',
+            templateUrl:'list.html'
           })
           .when('/detail/:thingId', {
-            controller:'DetailThingController as detailThing',
-            templateUrl:'detail.html',
-            resolve: resolveThings
+            controller:'DetailThingController',
+            templateUrl:'detail.html'
           })
           .otherwise({
             redirectTo:'/'
           });
     })
 
-    .controller('ThingsListController', function(ThingsFactory) {
-        var thingsList = this;
-        ThingsFactory.success(function(data) {
-            thingsList.things = data;
-        })
-    })
+    .controller('ThingsListController', ['$http', '$scope',
+        function($http, $scope) {
+            $http.get('content.json').success(function(data) {
+                $scope.thingsList = data;
+            });
+        }
+    ])
 
-    .controller('DetailThingController',
-    function($location, $routeParams, things) {
-      var detailThing = this;
-      var thingId = $routeParams.thingId,
-          thingIndex;
-
-      detailThing.things = things;
-      thingIndex = detailThing.things.$indexFor(thingId);
-      detailThing.thing = detailThing.things[thingIndex];
-
-    });
+    .controller('DetailThingController', ['$scope', '$routeParams',
+        function($scope, $routeParams) {
+            $scope.thingId = $routeParams.thingId;
+        }
+    ]);

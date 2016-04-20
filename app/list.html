@@ -7,10 +7,14 @@
         <th>Thumbnail</th>
     </tr>
     </thead>
-    <tbody>
-    <tr ng-repeat="thing in thingsList.things | filter:thingsList.search | orderBy:'name'">
-        <td>{{thing.name}}</td>
-        <td><a ng-href="#/detail/{{thing.$id}}"><img ng-src="{{thing.links[0]}}"></a></td>
-    </tr>
+    <tbody class="thingsList">
+        <tr ng-repeat="thing in thingsList | filter:query">
+            <td>{{thing.name}}</td>
+            <td class="thumbnail">
+                <a href="">
+                    <img ng-src="{{thing.links[0]}}">
+                </a>
+            </td>
+        </tr>
     </tbody>
 </table>
