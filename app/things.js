@@ -1,18 +1,18 @@
 angular.module('things', ['ngRoute', 'ngResource'])
 
     .factory('ThingsFactory', ['$http', function ($http) {
-        return $http.get('content.json');
+        return $http.get('data/content.json');
     }])
 
     .config(function($routeProvider) {
       $routeProvider
           .when('/', {
             controller:'ThingsListController',
-            templateUrl:'list.html'
+            templateUrl:'views/list.html'
           })
           .when('/detail/:thingId', {
             controller:'DetailThingController',
-            templateUrl:'detail.html'
+            templateUrl:'views/detail.html'
           })
           .otherwise({
             redirectTo:'/'
