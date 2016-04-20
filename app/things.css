@@ -2,14 +2,24 @@
 
 .thumbnail {
     width: 200px;
-    height: 120px;
+    height: 150px;
     display: inline-block;
     white-space: nowrap;
     margin: 10px;
 }
 
-/* resize images */
 .thumbnail img {
+    width: 100%;
+    height: auto;
+}
+
+.gallery-view {
+    width: 800px;
+    height: 600px;
+    margin: 10px;
+}
+
+.gallery-view img {
     width: 100%;
     height: auto;
 }

@@ -1,4 +1,4 @@
-<input type="text" ng-model="thingsList.search" class="search-query" id="things_search"
+<input type="text" ng-model="query" class="search-query" id="things_search"
        placeholder="Search">
 <table>
     <thead>
@@ -8,10 +8,10 @@
     </tr>
     </thead>
     <tbody class="thingsList">
-        <tr ng-repeat="thing in thingsList | filter:query">
+        <tr ng-repeat="thing in thingsList | filter: {name: query}">
             <td>{{thing.name}}</td>
             <td class="thumbnail">
-                <a ng-href="./detail/{{thing.id}}">
+                <a ng-href="#/detail/{{thing.id}}">
                     <img ng-src="{{thing.links[0]}}">
                 </a>
             </td>
