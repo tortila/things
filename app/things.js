@@ -23,7 +23,9 @@ angular.module('things', ['ngRoute', 'ngResource'])
         function($scope, ThingsFactory) {
             ThingsFactory.success(function(data) {
                 $scope.thingsList = data;
-            })
+            });
+            $scope.sortType = 'name';
+            $scope.sortReverse  = false;
         }
     ])
 
